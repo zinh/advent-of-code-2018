@@ -21,4 +21,5 @@ for line in f:
         if v == 3:
             count3 += 1
             break
+f.close()
 print(count2 * count3)

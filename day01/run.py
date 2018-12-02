@@ -5,4 +5,5 @@ for line in f:
         result += int(line[1:])
     else:
         result -= int(line[1:])
+f.close()
 print(result)

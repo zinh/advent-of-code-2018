@@ -3,10 +3,11 @@ from linked_list import LinkedList
 def read_input(file_name):
     with open(file_name) as f:
         data = f.read()
-        return LinkedList(list(data))
+        return list(data)
 
 # List of char
-def process(lst):
+def process(data):
+    lst = LinkedList(data)
     pointer = lst.head
     while pointer.next is not None:
         #print(pointer.val, list(lst))
@@ -33,4 +34,16 @@ def process(lst):
 def reversed_sign(c1, c2):
     return abs(ord(c1) - ord(c2)) == 32
 
-print(len(process(read_input('input.txt'))))
+def select_unit():
+    lst = read_input('input.txt')
+    result = []
+    for i in range(ord('a'), ord('z')):
+        c = chr(i)
+        upper_c = chr(i - 32)
+        filtered = list(filter(lambda x: x != c and x != upper_c, lst))
+        l = len(process(filtered))
+        result.append([c, l])
+    result.sort(key=lambda x: x[1])
+    return result
+
+print(select_unit())

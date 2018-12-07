@@ -62,4 +62,4 @@ def print_grid(grids):
     print("========")
     for row in grids:
         print("".join([str(cell[1]) if cell[1] is not None else 'x' for cell in row]))
-process()
+# process()

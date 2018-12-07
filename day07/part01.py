@@ -1,12 +1,8 @@
-from reader import read_file
+from reader import read_file, convert_to_graph
 
 def process():
-    edges = read_file('input')
-    vertices = {v for edge in edges for v in edge}
-    graph = {vertice: [] for vertice in vertices}
+    graph = convert_to_graph(read_file('input'))
     positions = []
-    for pre, pos in edges:
-        graph[pre].append(pos)
     while graph:
         vs = filter_vertices(vertices, graph)
         selected_vertice = vs[0]

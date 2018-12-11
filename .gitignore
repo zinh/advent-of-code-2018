@@ -2,3 +2,5 @@
 input*
 __pycache__
 .DS_Store
+*.o
+*.hi

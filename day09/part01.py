@@ -14,3 +14,5 @@ def game(player_count, last_marble):
             players[current_player] += score
         current_player = (current_player + 1) % player_count
     return players
+
+print(max(game(491, 71058*100)))

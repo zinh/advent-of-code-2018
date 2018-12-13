@@ -45,10 +45,12 @@ class LinkedList:
             else:
                 self.root = self.root.pre
                 pos += 1
-        val = self.root.val
+        deleted = self.root
         pre = self.root.pre
         succ = self.root.succ
         pre.succ = succ
         succ.pre = pre
         self.root = succ
-        return val
+        deleted.succ = None
+        deleted.pre = None
+        return deleted.val

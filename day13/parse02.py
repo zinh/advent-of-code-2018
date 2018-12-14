@@ -1,3 +1,5 @@
+import pdb 
+
 class Cart:
     def __init__(self, position, direction):
         self.position = position
@@ -73,6 +75,10 @@ class Cart:
 
     def go_down(self, lines):
         row, col = self.position
+        #if row + 1 >= len(lines):
+        #    pdb.set_trace()
+        #if col >= len(lines[row + 1]):
+        #    pdb.set_trace()
         next_cell = lines[row + 1][col]
         if next_cell == '/':
             self.direction = '<'
@@ -94,21 +100,37 @@ def parse(file_name):
     lines = []
     with open(file_name) as f:
         for line in f:
-            lines.append(line[0:-1])
+            if line[-1] == '\n':
+                lines.append(line[0:-1])
+            else:
+                lines.append(line)
     previous = {}
     original_map = [[map_direction(cell) for cell in line] for line in lines]
-    carts = {(row, col): [Cart((row, col), cell)] for row, line in enumerate(lines) for col, cell in enumerate(line) if cell == '>' or cell == '<' or cell == '^' or cell == 'v'}
+    carts = {(row, col): Cart((row, col), cell) for row, line in enumerate(lines) for col, cell in enumerate(line) if cell == '>' or cell == '<' or cell == '^' or cell == 'v'}
+    tick = 0
     while True:
         new_carts = {}
-        for position, c in carts.items():
-            cart = c[0]
+        positions = sorted(carts.keys())
+        while len(positions) > 0:
+            position = positions[0]
+            positions = positions[1:]
+            cart = carts[position]
             cart.move(original_map)
             if new_carts.get(cart.position):
-                new_carts[cart.position].append(cart)
+                new_carts.pop(cart.position, None)
+            elif cart.position in positions:
+                positions = list(filter(lambda p: p != cart.position, positions))
             else:
-                new_carts[cart.position] = [cart]
-        carts = {pos: c for pos, c in new_carts.items() if len(c) <= 1}
-        if len(carts.keys()) == 1:
+                new_carts[cart.position] = cart
+        #print(tick)
+        #print_map(original_map, carts.values())
+        #tick += 1
+        carts = new_carts
+        #if tick > 10:
+        #    break
+        #print(len(carts.keys()))
+        if len(carts.keys()) < 2:
+            #pdb.set_trace()
             print(carts.keys())
             break
 

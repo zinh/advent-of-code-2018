@@ -97,18 +97,17 @@ def parse(file_name):
             lines.append(line[0:-1])
     previous = {}
     original_map = [[map_direction(cell) for cell in line] for line in lines]
-    carts = {(row, col): Cart((row, col), cell) for row, line in enumerate(lines) for col, cell in enumerate(line) if cell == '>' or cell == '<' or cell == '^' or cell == 'v'}
+    carts = {(row, col): [Cart((row, col), cell)] for row, line in enumerate(lines) for col, cell in enumerate(line) if cell == '>' or cell == '<' or cell == '^' or cell == 'v'}
     while True:
-        pos = {}
         new_carts = {}
-        for position, cart in carts.items():
+        for position, c in carts.items():
+            cart = c[0]
             cart.move(original_map)
-            if pos.get(cart.position):
-                new_carts.pop(cart.position, None)
+            if new_carts.get(cart.position):
+                new_carts[cart.position].append(cart)
             else:
-                pos[cart.position] = True
-                new_carts[cart.position] = cart
-        carts = new_carts
+                new_carts[cart.position] = [cart]
+        carts = {pos: c for pos, c in new_carts.items() if len(c) <= 1}
         if len(carts.keys()) == 1:
             print(carts.keys())
             break

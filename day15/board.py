@@ -5,8 +5,10 @@ class Unit:
         self.position = position
 
     def is_opponent(self, other):
-        return (other is Unit and self.unit_type == 'G' and other.unit_type == 'E') or (self.unit_type == 'E' and other.unit_type == 'G')
+        return type(other) is Unit and (self.unit_type == 'G' and other.unit_type == 'E') or (self.unit_type == 'E' and other.unit_type == 'G')
 
+    def attack(self, other):
+        other.hit_point -= 3
 
 class Board:
     def __init__(self, lines):
@@ -26,7 +28,7 @@ class Board:
         result = []
         for row_num, row in enumerate(self.board):
             for col_num, cell in enumerate(row):
-                if cell is Unit:
+                if type(cell) is Unit:
                     result.append(cell)
         return result
 
@@ -39,7 +41,23 @@ class Board:
     # check if an unit is targeting another unit
     def is_target(self, unit):
         neighbors = self.unit_neighbors(unit.position)
-        targets = [for neighbor in neighbors if neighbor is Unit and unit.is_opponent(neighbor)]
+        targets = [for neighbor in neighbors if type(neighbor) is Unit and unit.is_opponent(neighbor)]
 
-    def is_opponent(self, unit1, unit2):
-        return (unit1 == 'G' and unit2 == 'E') or (unit1 == 'E' and unit2 == 'G')
+    # move a unit
+    def move(self, unit):
+        neighbors = self.unit_neighbors(unit.position)
+        for neighbor in neighbors:
+            if unit.is_opponent(neighbor):
+                unit.attack(neighbor)
+                if neighbor.hit_point <= 0:
+                    r, c = neighbor.position
+                    self.board[r][c] = '.'
+                return
+        self.find_targets(unit)
+
+    # find nearest target
+    def find_targets(self, unit):
+        neighbors = self.unit_neighbors(unit.position)
+        for (r, c), neighbor in neighbors:
+            if type(neighbor) is tuple:
+                board[r][c] += 1

@@ -58,7 +58,14 @@ def process_file(file_name):
     return a
 
 forest = Forest(process_file('input'))
+h = {forest.to_s(): True}
 for i in range(0, 1000):
     forest.iterate()
-    os.system('cls')
-    print(forest)
+    if i >= 565 and i <= 600:
+        print(i, forest.value())
+#   if h.get(forest.to_s()):
+#       print(i)
+#       print(h.get(forest.to_s()))
+#       break
+#   else:
+#       h[forest.to_s()] = i

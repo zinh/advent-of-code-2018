@@ -1,9 +1,12 @@
 class Machine:
-    def __init__(self, registers = []):
+    def __init__(self, ip_register = 0, registers = []):
         if registers:
             self.registers = registers
         else:
-            self.registers = [0, 0, 0, 0]
+            self.registers = [1, 0, 0, 0, 0, 0]
+
+        self.ip_register = ip_register
+        self.ip = self.registers[self.ip_register]
 
     def execute(self, insn):
         op, a, b, c = insn
@@ -57,3 +60,19 @@ class Machine:
                 self.registers[c] = 1
             else:
                 self.registers[c] = 0
+
+    def run_program(self, program):
+        i = 0
+        while self.ip < len(program):
+            self.registers[self.ip_register] = self.ip
+            insn = program[self.ip]
+            s = 'IP = ' + str(self.ip) + ' Start: ' + str(self.registers) + str(insn)
+            self.execute(insn)
+            s += ' -> ' + str(self.registers)
+            print(s)
+            self.ip = self.registers[self.ip_register]
+            if i > 100:
+                break
+            i += 1
+            self.ip += 1
+        return self.registers

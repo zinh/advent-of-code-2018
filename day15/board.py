@@ -32,20 +32,14 @@ class Board:
                     result.append(cell)
         return result
 
-    # return neighbor cells of an unit
-    def unit_neighbors(self, position):
-        row_num, col_num = position
-        neighbors = [(row_num - 1, col_num), (row_num, col_num - 1), (row_num, col_num + 1), (row_num + 1, col_num)]
-        return [((r, c), self.board[r][c]) for (r, c) in neighbors if r >= 0 and r < self.max_row and c >= 0 and c < self.max_col and self.board[r][c] != '#']
-
     # check if an unit is targeting another unit
     def is_target(self, unit):
-        neighbors = self.unit_neighbors(unit.position)
+        neighbors = Board.unit_neighbors(self.board, unit.position)
         targets = [for neighbor in neighbors if type(neighbor) is Unit and unit.is_opponent(neighbor)]
 
     # move a unit
     def move(self, unit):
-        neighbors = self.unit_neighbors(unit.position)
+        neighbors = Board.unit_neighbors(self.board, unit.position)
         for neighbor in neighbors:
             if unit.is_opponent(neighbor):
                 unit.attack(neighbor)
@@ -53,11 +47,50 @@ class Board:
                     r, c = neighbor.position
                     self.board[r][c] = '.'
                 return
-        self.find_targets(unit)
+        reachable_units, distance_board = self.find_targets(unit)
+        if len(reachable_units) > 0:
+            # get all unit with same distance
+            selected_targets = filter(lambda u: u[1] == reachable_units[0][1], reachable_units)
+            for position, distance, unit in selected_targets:
+                r, c = Board.backtrack_path(distance_board, unit)
+                current_r, current_c = unit.position
+                self.board[r][c] = unit
+                self.board[current_r][current_c] = '.'
+                unit.position = (r, c)
 
     # find nearest target
     def find_targets(self, unit):
-        neighbors = self.unit_neighbors(unit.position)
-        for (r, c), neighbor in neighbors:
-            if type(neighbor) is tuple:
-                board[r][c] += 1
+        distance_board = Board.find_path(unit, 1, [[for cell in row] for row in self.board])
+        reachable_units = []
+        for row in distance_board:
+            for cell in row:
+                if unit.is_opponent(cell):
+                    for position, neighbor_type in Board.unit_neighbors(self.board, cell.position):
+                        if type(neighbor_type) is int:
+                            reachable_units.append((position, neighbor_type, unit))
+                            break
+        return sorted(reachable_units, key=lambda x: x[1]), distance_board
+
+    # return neighbor cells of an unit
+    @staticmethod
+    def unit_neighbors(board, position):
+        row_num, col_num = position
+        max_row, max_col = len(board), len(board[0])
+        neighbors = [(row_num - 1, col_num), (row_num, col_num - 1), (row_num, col_num + 1), (row_num + 1, col_num)]
+        return [((r, c), board[r][c]) for (r, c) in neighbors if r >= 0 and r < max_row and c >= 0 and c < max_col and board[r][c] != '#']
+
+    @staticmethod
+    def find_path(unit, distance, board):
+        for (r, c), cell_type in Board.unit_neighbors(board, unit.position):
+            if cell_type == '.':
+                board[r][c] = distance
+                Board.find_path(unit, distance + 1, board)
+        return board
+
+    @staticmethod
+    def backtrack_path(distance_board, pos, current_distance):
+        if current_distance == 1:
+            return pos
+        for (r, c), cell_type in Board.unit_neighbors(pos):
+            if type(cell_type) is int and cell_type == current_distance - 1:
+                return Board.backtrack_path(distance_board, (r, c), cell_type) 

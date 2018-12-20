@@ -8,5 +8,6 @@ with open('input') as f:
         program.append((op, int(a), int(b), int(c)))
 
 #print(program)
+# machine = Machine(5, [8, 10551374, 10551374, 10551373, 111331472185129, 16])
 machine = Machine(5)
 print(machine.run_program(program))

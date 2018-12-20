@@ -71,7 +71,7 @@ class Machine:
             s += ' -> ' + str(self.registers)
             print(s)
             self.ip = self.registers[self.ip_register]
-            if i > 100:
+            if i > 50:
                 break
             i += 1
             self.ip += 1

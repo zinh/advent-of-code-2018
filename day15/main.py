@@ -6,6 +6,9 @@ with open('input1') as f:
         lines.append(line.strip())
 
 board = Board(lines)
+print(board)
 units = board.unit_positions()
-for pos, u in units:
-    print(board.unit_neighbors(pos))
+for u in units:
+    board.move(u)
+print('===')
+print(board)

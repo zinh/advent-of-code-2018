@@ -13,7 +13,7 @@ def parse(file_name):
     return routes
 
 def main():
-    route = parse('input6')
+    route = parse('input')
     m = {}
     stack = []
     pos = 0
@@ -25,7 +25,8 @@ def main():
         if c == '(':
             stack.append(current_coord)
         elif c == ')':
-            current_coord = stack.pop()
+            #current_coord = stack.pop()
+            stack.pop()
         elif c == '|':
             current_coord = stack[-1]
         else:
@@ -50,8 +51,9 @@ def main():
     #print(stack)
     #print('m = ', m)
     distances = count_doors(m)
-    draw_map(m, distances)
-    #print(len([d for _, row in distances.items() for _, d in row.items() if d >= 1000]))
+    #draw_map(m, distances)
+    #print(max([d for _, row in distances.items() for _, d in row.items()]))
+    print(len([d for _, row in distances.items() for _, d in row.items() if d >= 1000]))
     return m
 
 def draw_map(m, distances):

@@ -9,24 +9,24 @@ class Game:
     def turn(self):
         ended = True
         for unit in self.board.units():
-            if self.attack(unit):
-                ended = False
-            else:
-                self.move(unit)
-                if self.attack(unit):
-                    ended = False
+            if not unit.is_dead():
+              if self.attack(unit):
+                  ended = False
+              elif self.move(unit):
+                  ended = False
+                  self.attack(unit)
         return ended
 
     # move a unit
     def move(self, unit):
         paths = []
         for opponent in self.board.opponents(unit):
-            distance, next_step = self.board.find_shortest(unit, opponent)
+            distance, next_step, target = self.board.find_shortest(unit, opponent)
             if distance is not None:
-                paths.append((distance, next_step))
+                paths.append((distance, next_step, target))
         if paths:
-            paths.sort(key=lambda x: (x[0], x[1].position[0], x[1].position[1]))
-            _, next_step = paths[0]
+            paths.sort(key=lambda x: (x[0], x[2].position[0], x[2].position[1]))
+            _, next_step, target = paths[0]
             self.board.move_unit(unit, next_step)
             return next_step
         return None
@@ -36,7 +36,7 @@ class Game:
         #if unit.position == (2, 3):
         #    pdb.set_trace()
         if neighbor_units:
-            neighbor_units.sort(key=lambda u: u.hit_point)
+            neighbor_units.sort(key=lambda u: (u.hit_point, u.position[0], u.position[1]))
             target = neighbor_units[0]
             unit.attack(target)
             if target.is_dead():

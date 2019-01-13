@@ -40,15 +40,15 @@ class Board:
 
     def find_shortest(self, from_unit, to_unit):
         distance_board = self.clone()
-        distance, path = distance_board.find_shortest_recursive([from_unit], to_unit, 0)
+        distance, path, target = distance_board.find_shortest_recursive([from_unit], to_unit, 0)
         #if from_unit.position == (1, 4):
         #pdb.set_trace()
         #Board.print_board(distance_board.board)
         if distance is None:
-            return None, None
+            return None, None, None
         else:
             #print(from_unit.position, to_unit.position, path[0].position, distance)
-            return distance, sorted(path, key=lambda x: (x.position[0], x.position[1]))[0]
+            return distance, sorted(path, key=lambda x: (x.position[0], x.position[1]))[0], target
 
     def find_shortest_recursive(self, from_units, to_unit, current_distance):
         next_units = []
@@ -61,11 +61,13 @@ class Board:
                 elif neighbor.position == to_unit.position:
                     found = True
         if found:
-            min_distance = sorted([neighbor for neighbor in self.neighbors(to_unit) if isinstance(neighbor.type, int)], key=lambda x: x.type)[0].type
-            return min_distance, self.backtrack([to_unit], min_distance)
+            selected_target = sorted([neighbor for neighbor in self.neighbors(to_unit) if isinstance(neighbor.type, int)], 
+                    key=lambda x: (x.type, x.position[0], x.position[1]))[0]
+            min_distance = selected_target.type
+            return min_distance, self.backtrack([to_unit], min_distance), selected_target
         if next_units:
             return self.find_shortest_recursive(next_units, to_unit, current_distance + 1)
-        return None, None
+        return None, None, None
 
     def backtrack(self, from_units, distance):
         # get lowest neighbor

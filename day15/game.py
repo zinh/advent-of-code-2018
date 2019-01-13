@@ -2,19 +2,34 @@ from board import Board
 import pdb
 
 class Game:
-    def __init__(self, lines):
+    def __init__(self, lines, attack_point = 3):
         self.board = Board(lines)
+        self.attack_point = attack_point
+        self.elf_win = True
+
+    def run(self):
+        turn_count = 0
+        while not self.turn():
+            turn_count += 1
+        return turn_count, self.total_hit_point()
 
     # one game turn
     def turn(self):
         ended = True
         for unit in self.board.units():
             if not unit.is_dead():
-              if self.attack(unit):
+              target = self.attack(unit)
+              if target:
                   ended = False
+                  if target.is_dead() and target.is_elf():
+                      self.elf_win = False
+                      return True
               elif self.move(unit):
                   ended = False
-                  self.attack(unit)
+                  target = self.attack(unit)
+                  if target is not None and target.is_dead() and target.is_elf():
+                      self.elf_win = False
+                      return True
         return ended
 
     # move a unit
@@ -38,7 +53,7 @@ class Game:
         if neighbor_units:
             neighbor_units.sort(key=lambda u: (u.hit_point, u.position[0], u.position[1]))
             target = neighbor_units[0]
-            unit.attack(target)
+            unit.attack(target, self.attack_point)
             if target.is_dead():
                 self.board.remove(target.position)
             return target

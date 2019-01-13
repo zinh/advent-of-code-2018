@@ -6,18 +6,12 @@ with open('input') as f:
     for line in f:
         lines.append(line.strip())
 
-game = Game(lines)
-print(game)
-turn_count = 0
-while not game.turn():
-    turn_count += 1
-    #print("turn ", turn_count)
-    #print(game)
-print(game)
-print(turn_count, game.total_hit_point())
-#game.print_hit_point()
-#units = board.unit_positions()
-#for u in units:
-#    board.move(u)
-#print('===')
-#print(board)
+elf_win = False
+attack_point = 3
+while not elf_win:
+    game = Game(lines, attack_point)
+    turn_count, total_hit_point = game.run()
+    elf_win = game.elf_win
+    if elf_win:
+        print(attack_point, turn_count, total_hit_point)
+    attack_point += 1
